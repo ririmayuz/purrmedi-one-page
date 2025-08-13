@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2025-08-13 10:28:37
+-- 產生時間： 2025-08-13 19:54:37
 -- 伺服器版本： 10.4.32-MariaDB
 -- PHP 版本： 8.2.12
 
@@ -57,7 +57,7 @@ CREATE TABLE `purr_booking` (
   `pet_count` int(11) NOT NULL,
   `available_time` text NOT NULL COMMENT '方便視訊的時間',
   `img` varchar(255) NOT NULL,
-  `issu` text NOT NULL COMMENT '問題描述',
+  `issue` text NOT NULL,
   `status` tinyint(4) NOT NULL COMMENT '0=待處理, 1=已確認, 2=完成, 3=取消',
   `created_at` datetime NOT NULL DEFAULT current_timestamp() COMMENT '預約建立時間'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

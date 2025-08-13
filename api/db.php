@@ -164,10 +164,11 @@ class DB
 }
 
 // 建立操作不同資料表的物件
-$user = new DB('User');
-$Image = new DB('image');
-$About = new DB('about');
-$Bokking = new DB('booking');
+$Users = new DB('purr_users');
+$Images = new DB('purr_images');// 輪播用
+$About = new DB('purr_about');
+$Booking = new DB('purr_booking');
+
 // $Carousel = new DB('carousel');
 // $Title = new DB('title');
 // $Admin = new DB('admin');

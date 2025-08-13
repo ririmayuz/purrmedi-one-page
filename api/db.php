@@ -1,4 +1,19 @@
 <?php
+
+// 狀態 數字轉文字 0=待處理, 1=已確認, 2=完成, 3=取消
+function statusText($code)
+{
+    $status_map = [
+        0 => 'pending',
+        1 => 'confirmed',
+        2 => 'completed',
+        3 => 'canceled'
+    ];
+
+    return isset($status_map[$code]) ? $status_map[$code] : 'unknown';
+}
+
+
 // 啟動 session 功能，這樣可以儲存使用者的瀏覽資料（像登入狀態）
 session_start();
 
@@ -149,21 +164,11 @@ class DB
 }
 
 // 建立操作不同資料表的物件
-$Title = new DB('title');
-$Ad = new DB('ad');
-$Mvim = new DB('mvim');
+$user = new DB('User');
 $Image = new DB('image');
-$News = new DB('news');
-$Admin = new DB('admin');
-$Menu = new DB('menu');
-$Total = new DB('total');
-$Bottom = new DB('bottom');
-
-// 以下是用來計算網站的訪客人數（只計一次）
-if (!isset($_SESSION['visit'])) {
-    // 如果 session 沒有 visit，就代表第一次來
-    $t = $Total->find(1); // 抓 id 為 1 的那筆總人數資料
-    $t['total']++; // 訪客數 +1
-    $Total->save($t); // 存回資料庫
-    $_SESSION['visit'] = 1; // 標記使用者已來過
-}
+$About = new DB('about');
+$Bokking = new DB('booking');
+// $Carousel = new DB('carousel');
+// $Title = new DB('title');
+// $Admin = new DB('admin');
+// $Bottom = new DB('bottom');

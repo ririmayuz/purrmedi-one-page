@@ -1,25 +1,46 @@
 <?php
-include_once "db.php";
+include_once __DIR__ . "/db.php";
+
 
 $table = $_POST['table'] ?? '';
-if ($table == '') {
-  exit("no table");
-}
+if ($table == '') exit("no table");
 
 $DB = new DB($table);
 
-// 1) 如果有上傳圖片，存到 /images，欄位名字固定 img
-if (!empty($_FILES['img']['tmp_name'])) {
-  $filename = $_FILES['img']['name'];
-  move_uploaded_file($_FILES['img']['tmp_name'], "../images/" . $filename);
-  $_POST['img'] = $filename;
+// ✅ 圖片上傳處理（可選）
+$filename = uploadImage();
+if ($filename) $_POST['img'] = $filename;
+
+// ✅ 補預設欄位（不會覆蓋原本送過來的）
+$_POST = array_merge(getDefaultFields($table), $_POST);
+
+switch ($table) {
+  case "purr_booking":
+    $_POST['user_id'] = $_SESSION['user'];
+    $DB->save($_POST);
+
+    // ✅ 自動補個資表
+    $Profile = new DB('purr_user_profile');
+    $uid = $_SESSION['user'];
+    $exist = $Profile->find(['user_id' => $uid]);
+    $profileData = [
+      'user_id' => $uid,
+      'name' => $_POST['name'] ?? null,
+      'tel' => $_POST['tel'] ?? null,
+      'line_id' => $_POST['line_id'] ?? null,
+      'city' => $_POST['city'] ?? null
+    ];
+    if ($exist) $profileData['id'] = $exist['id'];
+    $Profile->save($profileData);
+
+    // 跳轉
+    to("../backend.php?do=" . redirectDo($table));
+    break;
 }
 
-// 2) 把不用的欄位（table）移掉
+// ✅ 其他資料表共用 save
 unset($_POST['table']);
-
-// 3) INSERT
 $DB->save($_POST);
 
-// 4) 回去（預設導回輪播）
-to("../backend.php?do=carousel");
+// ✅ 跳轉頁面
+to("../backend.php?do=" . redirectDo($table));

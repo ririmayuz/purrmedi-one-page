@@ -1,5 +1,5 @@
 <?php
-
+echo "✅ 成功載入 db.php<br>";
 // 狀態 數字轉文字 0=待處理, 1=已確認, 2=完成, 3=取消
 function statusText($code)
 {
@@ -161,11 +161,12 @@ class DB
 
         return $tmp;
     }
+
 }
 
 // 建立操作不同資料表的物件
 $Users = new DB('purr_users');
-$Images = new DB('purr_images');// 輪播用
+$Images = new DB('purr_images'); // 輪播用
 $About = new DB('purr_about');
 $Booking = new DB('purr_booking');
 
@@ -173,3 +174,45 @@ $Booking = new DB('purr_booking');
 // $Title = new DB('title');
 // $Admin = new DB('admin');
 // $Bottom = new DB('bottom');
+
+//上傳圖片處理（共用）
+    function uploadImage($inputName = 'img', $dir = "../images/")
+    {
+        if (!empty($_FILES[$inputName]['tmp_name'])) {
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $filename = $_FILES[$inputName]['name'];
+            move_uploaded_file($_FILES[$inputName]['tmp_name'], $dir . $filename);
+            return $filename;
+        }
+        return null;
+    }
+
+    //模組預設欄位（狀態、時間、顯示）
+    function getDefaultFields($table)
+    {
+        switch ($table) {
+            case "purr_images":
+                return ['sh' => 1];
+            case "purr_booking":
+                return [
+                    'status' => 0,
+                    'created_at' => date("Y-m-d H:i:s")
+                ];
+            default:
+                return [];
+        }
+    }
+
+    //table → do 的導向對應
+    function redirectDo($table)
+    {
+        $map = [
+            "purr_images" => "carousel",
+            "purr_about" => "about",
+            "purr_users" => "user",
+            "purr_booking" => "booking"
+        ];
+        return $map[$table] ?? 'carousel';
+    }

@@ -1,5 +1,5 @@
 <?php
-echo "✅ 成功載入 db.php<br>";
+// echo "✅ 成功載入 db.php<br>";
 // 狀態 數字轉文字 0=待處理, 1=已確認, 2=完成, 3=取消
 function statusText($code)
 {
@@ -9,7 +9,6 @@ function statusText($code)
         2 => 'completed',
         3 => 'canceled'
     ];
-
     return isset($status_map[$code]) ? $status_map[$code] : 'unknown';
 }
 

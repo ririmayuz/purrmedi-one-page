@@ -1,76 +1,116 @@
 <?php
 include_once __DIR__ . "/../api/db.php";
 
-// 撈出所有預約紀錄，最新在最上
-$rows = $Booking->all('', ' ORDER BY created_at DESC');
-
-// 狀態選項
-$statusOptions = [
-    0 => '待處理',
-    1 => '已確認',
-    2 => '完成',
-    3 => '取消'
-];
+// 後台「網站/醫師介紹管理」：新增 + 批次更新
+$rows = $About->all(); // purr_about 表
 ?>
 
-<h3 class="mb-3">預約紀錄管理</h3>
+<h3 class="mb-3" style="color: var(--bs-primary);">網站/醫師介紹管理</h3>
 
-<?php if (empty($rows)): ?>
-    <div class="text-muted">目前沒有預約紀錄。</div>
-<?php else: ?>
-    <form action="/api/edit.php" method="post">
-        <input type="hidden" name="table" value="purr_booking">
-        <div class="table-responsive">
-            <table class="table table-bordered align-middle">
-                <thead class="table-primary">
-                    <tr>
-                        <th>會員資訊</th>
-                        <th>預約細節</th>
-                        <th>問題與圖片</th>
-                        <th>狀態</th>
-                        <th>建立時間</th>
-                        <th>刪除</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($rows as $idx => $row): ?>
-                        <tr>
-                            <td>
-                                <?= $row['name']; ?><br>
-                                <?= $row['email']; ?><br>
-                                <?= $row['tel']; ?><br>
-                                <?= $row['line_id']; ?><br>
-                                <?= $row['city']; ?>
-                            </td>
-                            <td>
-                                預約時間：<?= $row['available_time']; ?><br>
-                                寵物數量：<?= $row['pet_count']; ?>
-                            </td>
-                            <td>
-                                <?= nl2br($row['issue']); ?><br>
-                                <?php if (!empty($row['img'])): ?>
-                                    <img src="/images/<?= $row['img']; ?>" style="height:60px;object-fit:cover;border-radius:6px">
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <select name="status[]">
-                                    <?php foreach ($statusOptions as $code => $text): ?>
-                                        <option value="<?= $code; ?>" <?= ($row['status'] == $code) ? 'selected' : ''; ?>>
-                                            <?= $text; ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                            <td><?= $row['created_at']; ?></td>
-                            <td class="text-center">
-                                <input type="checkbox" name="del[]" value="<?= $row['id']; ?>">
-                                <input type="hidden" name="id[]" value="<?= $row['id']; ?>">
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+<!-- 新增區 -->
+<div class="card mb-4 shadow-sm">
+  <div class="card-body">
+    <h5 class="mb-3">新增一筆介紹</h5>
+    <form action="/api/insert.php" method="post" enctype="multipart/form-data" class="row g-3">
+      <input type="hidden" name="table" value="purr_about">
+
+      <div class="col-12">
+        <label class="form-label">主標題 Title</label>
+        <input type="text" name="title" class="form-control" required>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">副標題 Subtitle</label>
+        <input type="text" name="subtitle" class="form-control">
+      </div>
+
+      <!-- 三段標題+內容 -->
+      <?php for ($i = 1; $i <= 3; $i++): ?>
+        <div class="col-md-4">
+          <label class="form-label">段落 <?= $i ?> 標題 h<?= $i ?></label>
+          <input type="text" name="h<?= $i ?>" class="form-control">
         </div>
-        <button class="btn btn-success">批次更新</button>
+        <div class="col-md-8">
+          <label class="form-label">段落 <?= $i ?> 內文 p<?= $i ?></label>
+          <textarea name="p<?= $i ?>" class="form-control" rows="2"></textarea>
+        </div>
+      <?php endfor; ?>
+
+      <div class="col-md-6">
+        <label class="form-label">圖片</label>
+        <input type="file" name="img" class="form-control">
+        <div class="form-text">建議 1200×800px，JPG/PNG</div>
+      </div>
+
+      <div class="col-12 text-end">
+        <button class="btn btn-primary">新增</button>
+      </div>
     </form>
-<?php endif; ?>
+  </div>
+</div>
+
+<!-- 批次更新區 -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h5 class="mb-3">介紹列表</h5>
+
+    <?php if (empty($rows)): ?>
+      <div class="text-muted">尚無介紹資料</div>
+    <?php else: ?>
+      <form action="/api/edit.php" method="post">
+        <input type="hidden" name="table" value="purr_about">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover align-middle bg-white">
+            <thead>
+              <tr>
+                <th>圖片</th>
+                <th>標題</th>
+                <th>副標題</th>
+                <th colspan="3">內容（h1/p1、h2/p2、h3/p3）</th>
+                <th class="text-center">刪除</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($rows as $idx => $row): ?>
+                <tr>
+                  <td style="min-width:110px;">
+                    <?php if (!empty($row['img'])): ?>
+                      <img src="/images/<?= htmlspecialchars($row['img']) ?>" class="img-fluid rounded" style="max-height:60px;object-fit:cover">
+                    <?php else: ?>
+                      <span class="text-muted small">無</span>
+                    <?php endif; ?>
+                  </td>
+
+                  <td style="min-width:180px;">
+                    <input type="text" name="title[]" value="<?= htmlspecialchars($row['title']) ?>" class="form-control">
+                  </td>
+
+                  <td style="min-width:180px;">
+                    <input type="text" name="subtitle[]" value="<?= htmlspecialchars($row['subtitle']) ?>" class="form-control">
+                  </td>
+
+                  <?php for ($i = 1; $i <= 3; $i++): ?>
+                    <td style="min-width:260px;">
+                      <input type="text" name="h<?= $i ?>[]" value="<?= htmlspecialchars($row['h' . $i]) ?>" class="form-control mb-1" placeholder="段落<?= $i ?>標題">
+                      <textarea name="p<?= $i ?>[]" rows="2" class="form-control" placeholder="段落<?= $i ?>內容"><?= htmlspecialchars($row['p' . $i]) ?></textarea>
+                    </td>
+                  <?php endfor; ?>
+
+                  <td class="text-center">
+                    <input type="checkbox" name="del[]" value="<?= (int)$row['id'] ?>">
+                  </td>
+
+                  <input type="hidden" name="id[]" value="<?= (int)$row['id'] ?>">
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="text-end">
+          <button class="btn btn-primary">批次更新</button>
+        </div>
+      </form>
+    <?php endif; ?>
+  </div>
+</div>

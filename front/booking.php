@@ -1,25 +1,43 @@
 <?php
 include_once "../api/db.php";
-
-// 若未登入，導回登入頁
 if (empty($_SESSION['user'])) {
   to("login.php");
 }
 ?>
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <title>預約表單</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>毛孩視訊預約</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-light">
+<body>
 
+<!-- 導覽列 -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="/index.php">PurrMedi</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#frontNav" aria-controls="frontNav" aria-expanded="false" aria-label="切換選單">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="frontNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="/index.php">首頁</a></li>
+        <li class="nav-item"><a class="nav-link" href="/front/about.php">關於我們</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/front/booking.php">預約</a></li>
+      </ul>
+      <a href="/front/logout.php" class="btn btn-light btn-sm">登出</a>
+    </div>
+  </div>
+</nav>
+
+<!-- 內容區 -->
 <div class="container py-5">
-  <h2 class="text-primary mb-4">🐾 毛孩視訊預約</h2>
+  <h2 class="mb-4" style="color: var(--bs-primary);">🐾 毛孩視訊預約</h2>
 
-  <form action="../api/insert.php" method="post" enctype="multipart/form-data" class="bg-white p-4 rounded shadow">
+  <form action="../api/insert.php" method="post" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-sm">
     <input type="hidden" name="table" value="purr_booking">
 
     <div class="row g-3">
@@ -77,5 +95,13 @@ if (empty($_SESSION['user'])) {
   </form>
 </div>
 
+<!-- 頁尾 -->
+<footer class="py-3 mt-4">
+  <div class="container text-center small text-muted">
+    © 2025 PurrMedi
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

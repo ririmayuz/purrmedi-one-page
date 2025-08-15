@@ -16,22 +16,8 @@ if (empty($_SESSION['user'])) {
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-custom">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="/index.php">PurrMedi</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#frontNav" aria-controls="frontNav" aria-expanded="false" aria-label="切換選單">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="frontNav">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="/index.php">首頁</a></li>
-        <li class="nav-item"><a class="nav-link active" href="/front/booking.php">預約</a></li>
-        <li class="nav-item"><a class="nav-link" href="/front/my_booking.php">我的預約</a></li>
-      </ul>
-      <a href="/front/logout.php" class="btn btn-light btn-sm">登出</a>
-    </div>
-  </div>
-</nav>
+<?php include_once __DIR__ . "/nav.php"; ?>
+
 
 <div class="container py-4">
 

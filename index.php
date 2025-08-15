@@ -13,7 +13,14 @@ if (!is_array($about)) {
   ];
 }
 
-$loggedIn = !empty($_SESSION['user']); // 是否登入
+$loggedIn = !empty($_SESSION['user']);  // 是否登入
+$currentAcc = null;                     // 目前登入者帳號（顯示用）
+if ($loggedIn) {
+  $Users = new DB('purr_users');
+  // 允許以 id 或陣列查找，視你的 DB() 實作；通常 find(主鍵id) OK
+  $u = $Users->find((int)$_SESSION['user']);
+  $currentAcc = $u['acc'] ?? null;
+}
 ?>
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -26,37 +33,9 @@ $loggedIn = !empty($_SESSION['user']); // 是否登入
 </head>
 <body class="bg-light">
 
-<!-- Navbar（主色；登入狀態切換按鈕） -->
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="/index.php">PurrMedi</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="切換選單">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+<!-- Navbar（主色；登入後顯示帳號與下拉） -->
+<?php include_once "./front/nav.php"; ?>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="#carouselHero">首頁</a></li>
-        <li class="nav-item"><a class="nav-link" href="#about">關於我們</a></li>
-        <?php if ($loggedIn): ?>
-          <li class="nav-item"><a class="nav-link" href="/front/my_booking.php">我的預約</a></li>
-          <li class="nav-item"><a class="nav-link" href="/front/booking.php">預約</a></li>
-        <?php endif; ?>
-      </ul>
-
-      <div class="d-flex">
-        <?php if ($loggedIn): ?>
-          <!-- 已登入：顯示登出 -->
-          <a href="/front/logout.php" class="btn btn-outline-light">登出</a>
-        <?php else: ?>
-          <!-- 未登入：顯示登入 / 註冊 -->
-          <a href="/front/login.php" class="btn btn-outline-light me-2">登入</a>
-          <a href="/front/reg.php" class="btn btn-light text-dark">註冊</a>
-        <?php endif; ?>
-      </div>
-    </div>
-  </div>
-</nav>
 
 <div class="container py-5">
   <!-- 輪播圖（75vh 等高 cover） -->
@@ -103,37 +82,11 @@ $loggedIn = !empty($_SESSION['user']); // 是否登入
     </button>
   </div>
 
-  <!-- About 區塊 -->
-  <div id="about" class="about-section row mx-auto mb-4">
-    <div class="col-md-4 text-center mb-3 mb-md-0">
-      <img src="/images/<?= htmlspecialchars($about['img']) ?>" class="about-img shadow" alt="關於圖片">
-    </div>
-    <div class="col-md-8">
-      <p class="mb-1 small"><?= htmlspecialchars($about['subtitle']) ?></p>
-      <h3 class="mb-3 fw-bold"><?= htmlspecialchars($about['title']) ?></h3>
-
-      <?php if (!empty($about['h1']) || !empty($about['p1'])): ?>
-        <h5 class="fw-bold"><?= htmlspecialchars($about['h1']) ?></h5>
-        <p><?= nl2br(htmlspecialchars($about['p1'])) ?></p>
-      <?php endif; ?>
-
-      <?php if (!empty($about['h2']) || !empty($about['p2'])): ?>
-        <h5 class="fw-bold"><?= htmlspecialchars($about['h2']) ?></h5>
-        <p><?= nl2br(htmlspecialchars($about['p2'])) ?></p>
-      <?php endif; ?>
-
-      <?php if (!empty($about['h3']) || !empty($about['p3'])): ?>
-        <h5 class="fw-bold"><?= htmlspecialchars($about['h3']) ?></h5>
-        <p><?= nl2br(htmlspecialchars($about['p3'])) ?></p>
-      <?php endif; ?>
-    </div>
-  </div>
-
-  <!-- 我想預約（獨立一行，置中） -->
-  <div class="text-center my-4">
-    <a href="/front/booking.php" class="btn btn-lg btn-primary px-4">我要預約</a>
-  </div>
+ <!-- 🐶🐱 About 區塊 -->
+  <?php include_once "./front/about.section.php"; ?>
 </div>
+
+
 
 <!-- Footer（維持自然高度，不強制對齊） -->
 <footer class="mt-5">

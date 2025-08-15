@@ -51,27 +51,23 @@
 <script>
 function login() {
   const acc = document.getElementById("acc").value.trim();
-  const pw = document.getElementById("pw").value.trim();
-
-  if (!acc || !pw) {
-    alert("請輸入帳號與密碼");
-    return;
-  }
+  const pw  = document.getElementById("pw").value.trim();
+  if (!acc || !pw) { alert("請輸入帳號與密碼"); return; }
 
   fetch("../api/login.php", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `acc=${encodeURIComponent(acc)}&pw=${encodeURIComponent(pw)}`
   })
-  .then(res => res.json())
-  .then(result => {
-    if (result.success) {
-      location.href = "booking.php"; 
+  .then(r => r.json())
+  .then(res => {
+    if (res.success) {
+      location.href = res.next || "/index.php";
     } else {
-      alert(result.msg);
+      alert(res.msg || "登入失敗");
     }
-  });
-}
+  })
+  .catch(() => alert("系統忙碌，請稍後再試"));}
 </script>
 </body>
 </html>

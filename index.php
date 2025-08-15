@@ -12,6 +12,8 @@ if (!is_array($about)) {
     'h1' => '', 'p1' => '', 'h2' => '', 'p2' => '', 'h3' => '', 'p3' => ''
   ];
 }
+
+$loggedIn = !empty($_SESSION['user']); // 是否登入
 ?>
 <!DOCTYPE html>
 <html lang="zh-Hant">
@@ -24,21 +26,33 @@ if (!is_array($about)) {
 </head>
 <body class="bg-light">
 
-<!-- Navbar（主色） -->
+<!-- Navbar（主色；登入狀態切換按鈕） -->
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
   <div class="container">
     <a class="navbar-brand fw-bold" href="/index.php">PurrMedi</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="切換選單">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item"><a class="nav-link" href="#carouselHero">首頁</a></li>
         <li class="nav-item"><a class="nav-link" href="#about">關於我們</a></li>
+        <?php if ($loggedIn): ?>
+          <li class="nav-item"><a class="nav-link" href="/front/my_booking.php">我的預約</a></li>
+          <li class="nav-item"><a class="nav-link" href="/front/booking.php">預約</a></li>
+        <?php endif; ?>
       </ul>
+
       <div class="d-flex">
-        <a href="/front/login.php" class="btn btn-outline-light me-2">登入</a>
-        <a href="/front/reg.php" class="btn btn-light text-dark">註冊</a>
+        <?php if ($loggedIn): ?>
+          <!-- 已登入：顯示登出 -->
+          <a href="/front/logout.php" class="btn btn-outline-light">登出</a>
+        <?php else: ?>
+          <!-- 未登入：顯示登入 / 註冊 -->
+          <a href="/front/login.php" class="btn btn-outline-light me-2">登入</a>
+          <a href="/front/reg.php" class="btn btn-light text-dark">註冊</a>
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -115,13 +129,13 @@ if (!is_array($about)) {
     </div>
   </div>
 
-  <!-- 我要預約（獨立一行置中） -->
+  <!-- 我想預約（獨立一行，置中） -->
   <div class="text-center my-4">
     <a href="/front/booking.php" class="btn btn-lg btn-primary px-4">我要預約</a>
   </div>
 </div>
 
-<!-- Footer -->
+<!-- Footer（維持自然高度，不強制對齊） -->
 <footer class="mt-5">
   <div class="container">
     <div class="row">

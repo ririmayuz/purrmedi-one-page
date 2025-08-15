@@ -1,4 +1,5 @@
-<?php
+<?php 
+// /front/booking.php
 include_once "../api/db.php";
 if (empty($_SESSION['user'])) {
   to("login.php");
@@ -15,7 +16,6 @@ if (empty($_SESSION['user'])) {
 </head>
 <body>
 
-<!-- 導覽列 -->
 <nav class="navbar navbar-expand-lg navbar-custom">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="/index.php">PurrMedi</a>
@@ -25,23 +25,30 @@ if (empty($_SESSION['user'])) {
     <div class="collapse navbar-collapse" id="frontNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item"><a class="nav-link" href="/index.php">首頁</a></li>
-        <li class="nav-item"><a class="nav-link" href="/front/about.php">關於我們</a></li>
         <li class="nav-item"><a class="nav-link active" href="/front/booking.php">預約</a></li>
+        <li class="nav-item"><a class="nav-link" href="/front/my_booking.php">我的預約</a></li>
       </ul>
       <a href="/front/logout.php" class="btn btn-light btn-sm">登出</a>
     </div>
   </div>
 </nav>
 
-<!-- 內容區 -->
-<div class="container py-5">
+<div class="container py-4">
+
+  <?php if (isset($_GET['first']) && $_GET['first'] === '1'): ?>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <strong>歡迎登入！</strong> 您目前尚無任何預約紀錄，請先填寫以下表單完成預約。
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <?php endif; ?>
+
   <h2 class="mb-4" style="color: var(--bs-primary);">🐾 毛孩視訊預約</h2>
 
   <form action="../api/insert.php" method="post" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-sm">
     <input type="hidden" name="table" value="purr_booking">
+    <input type="hidden" name="user_id" value="<?= (int)$_SESSION['user']; ?>"><!-- 前端保險；後端仍會強制覆蓋 -->
 
     <div class="row g-3">
-      <!-- 基本資料 -->
       <div class="col-md-6">
         <label class="form-label">飼主姓名 *</label>
         <input type="text" name="name" class="form-control" required>
@@ -58,7 +65,6 @@ if (empty($_SESSION['user'])) {
         <label class="form-label">LINE ID</label>
         <input type="text" name="line_id" class="form-control">
       </div>
-
       <div class="col-md-6">
         <label class="form-label">居住地</label>
         <input type="text" name="city" class="form-control">
@@ -67,8 +73,6 @@ if (empty($_SESSION['user'])) {
         <label class="form-label">飼養毛孩數量</label>
         <input type="number" name="pet_count" class="form-control" min="1" max="10">
       </div>
-
-      <!-- 預約資訊 -->
       <div class="col-md-6">
         <label class="form-label">方便預約的時段</label>
         <select name="available_time" class="form-select">
@@ -77,12 +81,10 @@ if (empty($_SESSION['user'])) {
           <option value="晚上">晚上</option>
         </select>
       </div>
-
       <div class="col-md-6">
         <label class="form-label">圖片（可選）</label>
-        <input type="file" name="img" class="form-control">
+        <input type="file" name="img" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp">
       </div>
-
       <div class="col-12">
         <label class="form-label">簡述想諮詢的問題</label>
         <textarea name="issue" class="form-control" rows="3"></textarea>
@@ -95,11 +97,8 @@ if (empty($_SESSION['user'])) {
   </form>
 </div>
 
-<!-- 頁尾 -->
 <footer class="py-3 mt-4">
-  <div class="container text-center small text-muted">
-    © 2025 PurrMedi
-  </div>
+  <div class="container text-center small text-muted">© 2025 PurrMedi</div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

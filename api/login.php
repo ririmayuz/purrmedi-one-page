@@ -17,30 +17,23 @@ if (!$user) {
   echo json_encode(['success' => false, 'msg' => '帳號不存在']); exit;
 }
 
-// 密碼驗證（支援雜湊與明碼）
-$valid = false;
-if (isset($user['pw'])) {
-  $info = password_get_info($user['pw']);
-  $valid = $info['algo'] ? password_verify($pw, $user['pw']) : ($pw === $user['pw']);
-}
+$info  = password_get_info($user['pw'] ?? '');
+$valid = $info['algo'] ? password_verify($pw, $user['pw']) : ($pw === $user['pw']);
 if (!$valid) {
   echo json_encode(['success' => false, 'msg' => '密碼錯誤']); exit;
 }
 
-// 登入成功
-$_SESSION['user'] = (int)$user['id'];
+// ✅ 統一設定 session：用 user_id/user_acc
+$_SESSION['user_id']  = (int)$user['id'];
+$_SESSION['user_acc'] = (string)$user['acc'];
+unset($_SESSION['user']); // 移除舊的，避免混用
 
-// 查是否有預約紀錄（撈陣列再 count，最穩）
+// 查是否有預約
 $Booking = new DB('purr_booking');
-$rows = $Booking->all(['user_id' => $_SESSION['user']]);
+$rows = $Booking->all(['user_id' => $_SESSION['user_id']]);
 $hasBooking = is_array($rows) ? count($rows) : 0;
 
-// 規則：有單回首頁；沒單到預約並顯示警告
 $next = ($hasBooking > 0) ? '/index.php' : '/front/booking.php?first=1';
 
-echo json_encode([
-  'success' => true,
-  'msg'     => '登入成功',
-  'next'    => $next
-]);
+echo json_encode(['success'=>true,'msg'=>'登入成功','next'=>$next]);
 exit;

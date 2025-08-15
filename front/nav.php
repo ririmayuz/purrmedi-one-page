@@ -1,16 +1,9 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once __DIR__ . "/../api/db.php";
 
-$loggedIn = !empty($_SESSION['user']);
-$currentAcc = null;
-if ($loggedIn) {
-    $Users = new DB('purr_users');
-    $u = $Users->find((int)$_SESSION['user']);
-    $currentAcc = $u['acc'] ?? null;
-}
+$loggedIn    = !empty($_SESSION['user_id']);
+$currentAcc  = $_SESSION['user_acc'] ?? null;
 ?>
 <style>
   .navbar-custom { background-color: #b98e68; }

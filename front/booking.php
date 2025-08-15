@@ -1,8 +1,17 @@
-<?php 
-// /front/booking.php
+<?php
 include_once "../api/db.php";
-if (empty($_SESSION['user'])) {
-  to("login.php");
+
+// 取得目前登入者 ID（優先用 user_id，相容舊的 user）
+$uid = null;
+if (!empty($_SESSION['user_id'])) {
+    $uid = (int)$_SESSION['user_id'];
+} elseif (!empty($_SESSION['user'])) {
+    $uid = (int)$_SESSION['user']; // 舊的相容處理
+}
+
+if (!$uid) {
+    to("login.php");
+    exit;
 }
 ?>
 <!doctype html>
@@ -18,12 +27,12 @@ if (empty($_SESSION['user'])) {
 
 <?php include_once __DIR__ . "/nav.php"; ?>
 
+<div class="container py-5">
 
-<div class="container py-4">
-
+  <!-- ✅ 首次註冊／登入且無紀錄時顯示提醒：/front/booking.php?first=1 -->
   <?php if (isset($_GET['first']) && $_GET['first'] === '1'): ?>
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      <strong>歡迎登入！</strong> 您目前尚無任何預約紀錄，請先填寫以下表單完成預約。
+      <strong>歡迎加入！</strong> 您目前尚無任何預約紀錄，請先填寫以下表單完成預約。
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
   <?php endif; ?>
@@ -32,9 +41,9 @@ if (empty($_SESSION['user'])) {
 
   <form action="../api/insert.php" method="post" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-sm">
     <input type="hidden" name="table" value="purr_booking">
-    <input type="hidden" name="user_id" value="<?= (int)$_SESSION['user']; ?>"><!-- 前端保險；後端仍會強制覆蓋 -->
 
     <div class="row g-3">
+      <!-- 基本資料 -->
       <div class="col-md-6">
         <label class="form-label">飼主姓名 *</label>
         <input type="text" name="name" class="form-control" required>
@@ -51,6 +60,7 @@ if (empty($_SESSION['user'])) {
         <label class="form-label">LINE ID</label>
         <input type="text" name="line_id" class="form-control">
       </div>
+
       <div class="col-md-6">
         <label class="form-label">居住地</label>
         <input type="text" name="city" class="form-control">
@@ -59,6 +69,8 @@ if (empty($_SESSION['user'])) {
         <label class="form-label">飼養毛孩數量</label>
         <input type="number" name="pet_count" class="form-control" min="1" max="10">
       </div>
+
+      <!-- 預約資訊 -->
       <div class="col-md-6">
         <label class="form-label">方便預約的時段</label>
         <select name="available_time" class="form-select">
@@ -67,10 +79,12 @@ if (empty($_SESSION['user'])) {
           <option value="晚上">晚上</option>
         </select>
       </div>
+
       <div class="col-md-6">
         <label class="form-label">圖片（可選）</label>
         <input type="file" name="img" class="form-control" accept=".jpg,.jpeg,.png,.gif,.webp">
       </div>
+
       <div class="col-12">
         <label class="form-label">簡述想諮詢的問題</label>
         <textarea name="issue" class="form-control" rows="3"></textarea>
